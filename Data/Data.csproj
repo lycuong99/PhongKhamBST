@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <Folder Include="ConstData\" />
-    <Folder Include="ViewModels\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

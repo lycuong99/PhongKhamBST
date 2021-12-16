@@ -14,5 +14,10 @@ namespace PhongKhamBST.Extensions
         {
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(dbConnection));
         }
+
+        public static void ConfgiCORS(this IServiceCollection services)
+        {
+            services.AddCors(options => options.AddPolicy("AllowAll", builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
+        }
     }
 }
