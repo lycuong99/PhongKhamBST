@@ -18,6 +18,10 @@ using Data.ViewModels;
 using Newtonsoft.Json;
 using Services.Helper;
 using Microsoft.AspNetCore.Authentication;
+using Data.Query;
+using HotChocolate.AspNetCore;
+using HotChocolate.AspNetCore.Playground;
+using Data.GraphQL.Types;
 
 namespace PhongKhamBST
 {
@@ -54,51 +58,22 @@ namespace PhongKhamBST
                     Credential = GoogleCredential.FromJson(json)
                 });
             }
+
             services.AddAutoMapper(typeof(MapperProfile));
             services.AddControllers();
             services.ConfgiCORS();
+           
 
             services.ConfigDbContext(Configuration["ConnectionStrings:DbConnection"]);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo()
-                {
-                    Version = "v1",
-                    Title = "MyAPI",
-                    Description = "Testing",
-
-                });
-                c.AddSecurityDefinition(ApiKeyAuthenticationOptions.DefaultScheme, new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    Name = ApiKeyAuthenticationOptions.HeaderKey,
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Insert Jwt Token",
-                    
-                });
-                
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                 {
-                     {
-                         new OpenApiSecurityScheme
-                         {
-                             Reference = new OpenApiReference
-                             {
-                                 Type = ReferenceType.SecurityScheme,
-                                   Id = ApiKeyAuthenticationOptions.DefaultScheme
-                             },
-                         },
-                         new string[] { }
-                     }
-                 });
-            });
+            services.BusinessServices();
+            services.ConfigSwagger();
 
             services.ConfigJwt(Configuration);
-        
-            
+
+            services.AddGraphQLServer().AddQueryType<Query>().AddType<UserType>();
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,11 +82,17 @@ namespace PhongKhamBST
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UsePlayground(new PlaygroundOptions
+                {
+                    QueryPath = "/graphql",
+                    Path = "/playground"
+                });
             }
 
             app.UseHttpsRedirection();
-
-            app.UseCors("CorsPolicy");
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseRouting();
 
@@ -130,6 +111,16 @@ namespace PhongKhamBST
             {
                 endpoints.MapControllers();
             });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGraphQL();
+            });
+
+          /*  app.UseGraphQLVoyager(new VoyagerOptions()
+            {
+                GraphQLEndPoint = "/graphql"
+            }, "/graphql-voyager");*/
         }
     }
 }

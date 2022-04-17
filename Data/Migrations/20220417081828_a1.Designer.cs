@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211205021943_s1")]
-    partial class s1
+    [Migration("20220417081828_a1")]
+    partial class a1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.21")
+                .HasAnnotation("ProductVersion", "3.1.24")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -48,6 +48,9 @@ namespace Data.Migrations
                     b.Property<Guid>("TreatById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("TreatByUId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<Guid?>("TreatmentId")
                         .HasColumnType("uniqueidentifier");
 
@@ -55,7 +58,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.HasIndex("TreatById");
+                    b.HasIndex("TreatByUId");
 
                     b.HasIndex("TreatmentId");
 
@@ -128,8 +131,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Dosage")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Dosage")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("MedicineId")
                         .HasColumnType("uniqueidentifier");
@@ -163,9 +166,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -176,9 +178,32 @@ namespace Data.Migrations
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("UId");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            UId = "AVASASSAS",
+                            Email = "email1@email.com",
+                            Fullname = "NGuyen Van A",
+                            Role = "User"
+                        },
+                        new
+                        {
+                            UId = "AVASASSAS1",
+                            Email = "email2@email.com",
+                            Fullname = "NGuyen Van B",
+                            Role = "User"
+                        },
+                        new
+                        {
+                            UId = "AVASASSAS2",
+                            Email = "email3@email.com",
+                            Fullname = "NGuyen Van C",
+                            Role = "User"
+                        });
                 });
 
             modelBuilder.Entity("Data.Entities.Appointment", b =>
@@ -189,9 +214,7 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entities.User", "TreatBy")
                         .WithMany()
-                        .HasForeignKey("TreatById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TreatByUId");
 
                     b.HasOne("Data.Entities.Treatment", "Treatment")
                         .WithMany()

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class s1 : Migration
+    public partial class a1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,14 +53,14 @@ namespace Data.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    UId = table.Column<string>(nullable: false),
                     Fullname = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Role = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_User", x => x.UId);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,7 +72,7 @@ namespace Data.Migrations
                     Quantity = table.Column<int>(nullable: false),
                     NoDay = table.Column<int>(nullable: false),
                     NoTimeToTakeMedicine = table.Column<int>(nullable: false),
-                    Dosage = table.Column<string>(nullable: true),
+                    Dosage = table.Column<int>(nullable: false),
                     Unit = table.Column<string>(nullable: true),
                     TreatmentId = table.Column<string>(nullable: true),
                     TreatmentId1 = table.Column<Guid>(nullable: true)
@@ -106,7 +106,8 @@ namespace Data.Migrations
                     Note = table.Column<string>(nullable: true),
                     Symptoms = table.Column<string>(nullable: true),
                     TreatmentId = table.Column<Guid>(nullable: true),
-                    TreatById = table.Column<Guid>(nullable: false)
+                    TreatById = table.Column<Guid>(nullable: false),
+                    TreatByUId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -118,11 +119,11 @@ namespace Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Appointment_User_TreatById",
-                        column: x => x.TreatById,
+                        name: "FK_Appointment_User_TreatByUId",
+                        column: x => x.TreatByUId,
                         principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Appointment_Treatment_TreatmentId",
                         column: x => x.TreatmentId,
@@ -131,15 +132,30 @@ namespace Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "UId", "Email", "Fullname", "Role" },
+                values: new object[] { "AVASASSAS", "email1@email.com", "NGuyen Van A", "User" });
+
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "UId", "Email", "Fullname", "Role" },
+                values: new object[] { "AVASASSAS1", "email2@email.com", "NGuyen Van B", "User" });
+
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "UId", "Email", "Fullname", "Role" },
+                values: new object[] { "AVASASSAS2", "email3@email.com", "NGuyen Van C", "User" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Appointment_PatientId",
                 table: "Appointment",
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointment_TreatById",
+                name: "IX_Appointment_TreatByUId",
                 table: "Appointment",
-                column: "TreatById");
+                column: "TreatByUId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointment_TreatmentId",
